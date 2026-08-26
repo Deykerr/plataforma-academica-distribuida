@@ -1,0 +1,21 @@
+# --- Java / Maven ---
+target/
+*.class
+*.log
+
+# --- Spring Boot ---
+.mvn/
+mvnw
+mvnw.cmd
+
+# --- IDEs (Visual Studio Code, NetBeans, IntelliJ) ---
+.vscode/
+.idea/
+*.iml
+nbproject/private/
+build/
+nb-configuration.xml
+
+# --- OS Specific ---
+.DS_Store
+Thumbs.db
