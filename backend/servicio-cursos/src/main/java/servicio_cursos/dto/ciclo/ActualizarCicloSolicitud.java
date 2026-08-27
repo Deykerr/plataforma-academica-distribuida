@@ -1,0 +1,13 @@
+package servicio_cursos.dto.ciclo;
+
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+public record ActualizarCicloSolicitud(
+        @NotNull @Min(1) @Max(15) Integer numero,
+        @NotBlank @Size(max = 80) String nombre
+) {
+}

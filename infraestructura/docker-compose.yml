@@ -1,0 +1,128 @@
+services:
+  postgres-usuarios:
+    image: postgres:17-alpine
+    container_name: academica-postgres-usuarios
+    environment:
+      POSTGRES_DB: usuarios_db
+      POSTGRES_USER: usuarios_app
+      POSTGRES_PASSWORD: ${USUARIOS_DB_PASSWORD:-usuarios_password}
+    ports:
+      - "5433:5432"
+    volumes:
+      - usuarios_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U usuarios_app -d usuarios_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - academica-network
+
+  servicio-usuarios:
+    build:
+      context: ../backend/servicio-usuarios
+    container_name: academica-servicio-usuarios
+    environment:
+      DB_URL: jdbc:postgresql://postgres-usuarios:5432/usuarios_db
+      DB_USERNAME: usuarios_app
+      DB_PASSWORD: ${USUARIOS_DB_PASSWORD:-usuarios_password}
+      JWT_SECRET: ${JWT_SECRET:-clave-local-docker-cambiar-minimo-32-caracteres-seguros}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@academica.local}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Admin123*}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres-usuarios:
+        condition: service_healthy
+    networks:
+      - academica-network
+
+  postgres-cursos:
+    image: postgres:17-alpine
+    container_name: academica-postgres-cursos
+    environment:
+      POSTGRES_DB: cursos_db
+      POSTGRES_USER: cursos_app
+      POSTGRES_PASSWORD: ${CURSOS_DB_PASSWORD:-cursos_password}
+    ports:
+      - "5434:5432"
+    volumes:
+      - cursos_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cursos_app -d cursos_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - academica-network
+
+  servicio-cursos:
+    build:
+      context: ../backend/servicio-cursos
+    container_name: academica-servicio-cursos
+    environment:
+      DB_URL: jdbc:postgresql://postgres-cursos:5432/cursos_db
+      DB_USERNAME: cursos_app
+      DB_PASSWORD: ${CURSOS_DB_PASSWORD:-cursos_password}
+      JWT_SECRET: ${JWT_SECRET:-clave-local-docker-cambiar-minimo-32-caracteres-seguros}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres-cursos:
+        condition: service_healthy
+    networks:
+      - academica-network
+
+  postgres-matriculas:
+    image: postgres:17-alpine
+    container_name: academica-postgres-matriculas
+    environment:
+      POSTGRES_DB: matriculas_db
+      POSTGRES_USER: matriculas_app
+      POSTGRES_PASSWORD: ${MATRICULAS_DB_PASSWORD:-matriculas_password}
+    ports:
+      - "5435:5432"
+    volumes:
+      - matriculas_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U matriculas_app -d matriculas_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - academica-network
+
+  servicio-matriculas:
+    build:
+      context: ../backend/servicio-matriculas
+    container_name: academica-servicio-matriculas
+    environment:
+      DB_URL: jdbc:postgresql://postgres-matriculas:5432/matriculas_db
+      DB_USERNAME: matriculas_app
+      DB_PASSWORD: ${MATRICULAS_DB_PASSWORD:-matriculas_password}
+      USUARIOS_SERVICE_URL: http://servicio-usuarios:8081
+      CURSOS_SERVICE_URL: http://servicio-cursos:8082
+      JWT_SECRET: ${JWT_SECRET:-clave-local-docker-cambiar-minimo-32-caracteres-seguros}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
+    ports:
+      - "8083:8083"
+    depends_on:
+      postgres-matriculas:
+        condition: service_healthy
+      servicio-usuarios:
+        condition: service_started
+      servicio-cursos:
+        condition: service_started
+    networks:
+      - academica-network
+
+volumes:
+  usuarios_postgres_data:
+  cursos_postgres_data:
+  matriculas_postgres_data:
+
+networks:
+  academica-network:
+    driver: bridge

@@ -4,9 +4,25 @@ target/
 *.log
 
 # --- Spring Boot ---
+# El Maven Wrapper si se versiona para que el proyecto pueda compilarse sin una instalacion global.
 .mvn/
 mvnw
 mvnw.cmd
+!backend/servicio-usuarios/.mvn/
+!backend/servicio-usuarios/.mvn/wrapper/
+!backend/servicio-usuarios/.mvn/wrapper/maven-wrapper.properties
+!backend/servicio-usuarios/mvnw
+!backend/servicio-usuarios/mvnw.cmd
+!backend/servicio-cursos/.mvn/
+!backend/servicio-cursos/.mvn/wrapper/
+!backend/servicio-cursos/.mvn/wrapper/maven-wrapper.properties
+!backend/servicio-cursos/mvnw
+!backend/servicio-cursos/mvnw.cmd
+!backend/servicio-matriculas/.mvn/
+!backend/servicio-matriculas/.mvn/wrapper/
+!backend/servicio-matriculas/.mvn/wrapper/maven-wrapper.properties
+!backend/servicio-matriculas/mvnw
+!backend/servicio-matriculas/mvnw.cmd
 
 # --- IDEs (Visual Studio Code, NetBeans, IntelliJ) ---
 .vscode/
