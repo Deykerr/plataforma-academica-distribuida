@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { BarChart3, Bell, BookOpen, BookOpenCheck, CalendarRange, ClipboardCheck, GraduationCap, LayoutDashboard, Library, LogOut, Menu, NotebookTabs, ShieldCheck, UserCircle, UserRound, UsersRound, X } from 'lucide-react';
+import { BarChart3, Bell, BookOpen, BookOpenCheck, CalendarDays, CalendarRange, ClipboardCheck, GraduationCap, LayoutDashboard, Library, LogOut, Menu, NotebookTabs, ShieldCheck, UserCircle, UserRound, UsersRound, X } from 'lucide-react';
 import { Brand } from './brand';
 import { LoadingScreen } from './loading-screen';
 import { useAuth } from '@/context/auth-context';
@@ -29,6 +29,7 @@ const navigation = {
     { href: '/panel/estudiante', label: 'Resumen', icon: LayoutDashboard },
     { href: '/panel/estudiante/oferta', label: 'Oferta académica', icon: BookOpen },
     { href: '/panel/estudiante/matriculas', label: 'Mis matrículas', icon: NotebookTabs },
+    { href: '/panel/estudiante/horario', label: 'Mi horario', icon: CalendarDays },
     { href: '/panel/estudiante/notas', label: 'Mis notas', icon: GraduationCap },
     { href: '/panel/estudiante/reportes', label: 'Mi reporte académico', icon: BarChart3 },
     { href: '/panel/estudiante/perfil', label: 'Mi perfil', icon: UserCircle },

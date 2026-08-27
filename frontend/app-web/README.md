@@ -40,7 +40,7 @@ Una cuenta que intente abrir el panel de otro rol es redirigida a su propia vist
 
 - Administrador: usuarios, catálogo de carreras/ciclos/cursos/aulas, operación de periodos/secciones/matrículas y reportes de ocupación y rendimiento.
 - Docente: secciones asignadas, evaluaciones ponderadas, estados, registro o corrección de notas y reportes por sección.
-- Estudiante: oferta académica, matrícula con validación de prerrequisitos, retiros, notas, perfil e historial académico imprimible.
+- Estudiante: oferta académica, matrícula con validación de prerrequisitos, horario semanal, retiros, notas, perfil e historial académico imprimible.
 - Público: registro de una nueva cuenta de estudiante en `/registro`.
 
 Los registros principales incluyen edición controlada por las reglas del backend. Los reportes pueden descargarse en CSV o imprimirse/guardarse como PDF desde el navegador.

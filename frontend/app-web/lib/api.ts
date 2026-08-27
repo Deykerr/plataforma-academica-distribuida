@@ -16,7 +16,18 @@ export class ApiError extends Error {
 async function errorMessage(response: Response): Promise<string> {
   try {
     const body = await response.json() as Record<string, unknown>;
-    return String(body.detalle ?? body.mensaje ?? body.message ?? 'No se pudo completar la solicitud.');
+    const message = String(body.detalle ?? body.mensaje ?? body.message ?? 'No se pudo completar la solicitud.');
+    if (body.campos && typeof body.campos === 'object' && !Array.isArray(body.campos)) {
+      const labels: Record<string, string> = {
+        codigo: 'Código', nombre: 'Nombre', descripcion: 'Descripción', duracionCiclos: 'Duración en ciclos',
+        documentoIdentidad: 'Documento', fechaNacimiento: 'Fecha de nacimiento', fechaInicio: 'Fecha de inicio',
+        fechaFin: 'Fecha de fin', fechaInicioMatricula: 'Inicio de matrícula', fechaFinMatricula: 'Fin de matrícula',
+      };
+      const details = Object.entries(body.campos as Record<string, unknown>)
+        .map(([field, value]) => `${labels[field] ?? field}: ${String(value)}`).join(' · ');
+      if (details) return `${message}. ${details}`;
+    }
+    return message;
   } catch {
     return response.status === 503
       ? 'Uno de los servicios académicos no está disponible.'

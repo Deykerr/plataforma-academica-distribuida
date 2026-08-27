@@ -1,6 +1,6 @@
 # Plataforma académica distribuida
 
-Proyecto final del curso de Sistemas Distribuidos. La solución se construye con microservicios Java Spring Boot, PostgreSQL, APIs REST, JWT, Docker y un frontend React.
+Proyecto final del curso de Sistemas Distribuido y Gestión de BD. La solución se construye con microservicios Java Spring Boot, PostgreSQL, APIs REST, JWT, Docker y un frontend React.
 
 ## Estado actual
 

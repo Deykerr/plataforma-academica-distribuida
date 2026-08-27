@@ -83,10 +83,11 @@ La validación consulta en tiempo real al servicio de Evaluaciones; no se basa s
 Con la cuenta estudiante:
 
 1. Revise **Mis matrículas** y pruebe el retiro solo durante una matrícula abierta.
-2. Revise **Mis notas** y abra el detalle de cada evaluación publicada.
-3. Actualice teléfono o dirección en **Mi perfil**.
-4. Abra **Mi reporte académico**, descargue el CSV y guarde la vista como PDF.
-5. Intente escribir manualmente `/panel/administrador` en el navegador: debe volver al panel de estudiante.
+2. Abra **Mi horario**, compruebe los bloques de curso, aula y sección, y navegue entre semanas o cambie a la vista de lista.
+3. Revise **Mis notas** y abra el detalle de cada evaluación publicada.
+4. Actualice teléfono o dirección en **Mi perfil**.
+5. Abra **Mi reporte académico**, descargue el CSV y guarde la vista como PDF.
+6. Intente escribir manualmente `/panel/administrador` en el navegador: debe volver al panel de estudiante.
 
 ## 7. Verificar reportes del administrador
 
