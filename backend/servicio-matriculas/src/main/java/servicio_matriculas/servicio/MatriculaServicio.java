@@ -102,6 +102,19 @@ public class MatriculaServicio {
     }
 
     @Transactional(readOnly = true)
+    public PaginaRespuesta<MatriculaRespuesta> porSeccion(Long seccionId, Pageable pageable) {
+        Seccion seccion = seccionServicio.buscarEntidad(seccionId);
+        boolean administrador = contextoUsuario.tieneRol("ADMINISTRADOR");
+        boolean docenteResponsable = contextoUsuario.tieneRol("DOCENTE")
+                && contextoUsuario.usuarioId().equals(seccion.getDocenteId());
+        if (!administrador && !docenteResponsable) {
+            throw new AccessDeniedException(
+                    "Solo el docente responsable o la administracion pueden consultar la seccion");
+        }
+        return listar(null, null, seccionId, EstadoMatricula.ACTIVA, pageable);
+    }
+
+    @Transactional(readOnly = true)
     public MatriculaRespuesta obtener(Long id) {
         Matricula matricula = buscar(id);
         exigirConsultaPermitida(matricula);

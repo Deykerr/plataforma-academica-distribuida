@@ -29,6 +29,7 @@ Antes de crear una matrícula, Cursos entrega los identificadores de prerrequisi
 | `/api/v1/secciones/mias` | Docente | Solo lectura |
 | `/api/v1/matriculas` | Administrador | Administrador o estudiante propietario |
 | `/api/v1/matriculas/mias` | Estudiante | Solo lectura |
+| `/api/v1/matriculas/seccion/{id}` | Docente responsable o administrador | Solo lectura |
 | `/api/v1/matriculas/{id}/validacion` | Usuario autenticado | Solo lectura |
 | `/api/v1/reportes` | Administrador | Solo lectura |
 

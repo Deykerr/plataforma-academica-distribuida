@@ -61,6 +61,9 @@ class ServicioMatriculasApplicationTests {
         String tokenAdmin = generarToken(1L, "admin@academica.test", List.of("ADMINISTRADOR"));
         String tokenEstudiante = generarToken(100L, "estudiante@academica.test", List.of("ESTUDIANTE"));
         String tokenOtro = generarToken(101L, "otro@academica.test", List.of("ESTUDIANTE"));
+        String tokenDocente = generarToken(200L, "docente@academica.test", List.of("DOCENTE"));
+        String tokenDocenteAjeno = generarToken(201L, "docente-ajeno@academica.test",
+                List.of("DOCENTE"));
         String tokenSinPrerrequisito = generarToken(102L, "sin-prerrequisito@academica.test",
                 List.of("ESTUDIANTE"));
         LocalDate hoy = LocalDate.now();
@@ -138,6 +141,13 @@ class ServicioMatriculasApplicationTests {
                 "{\"estudianteId\":100,\"seccionId\":" + seccionId + "}", tokenEstudiante);
         assertEquals(201, matricula.statusCode());
         long matriculaId = id(matricula.body());
+
+        HttpResponse<String> listadoDocente = enviar("GET",
+                "/api/v1/matriculas/seccion/" + seccionId, null, tokenDocente);
+        assertEquals(200, listadoDocente.statusCode());
+        assertTrue(listadoDocente.body().contains("\"estudianteId\":100"));
+        assertEquals(403, enviar("GET", "/api/v1/matriculas/seccion/" + seccionId,
+                null, tokenDocenteAjeno).statusCode());
 
         assertEquals(409, enviar("POST", "/api/v1/matriculas",
                 "{\"estudianteId\":100,\"seccionId\":" + seccionId + "}",

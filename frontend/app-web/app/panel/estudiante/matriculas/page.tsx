@@ -1,0 +1,24 @@
+'use client';
+
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { LogOut, RefreshCw } from 'lucide-react';
+import { DashboardError, DashboardSkeleton, EmptyState, PageHeading, StatusBadge } from '@/components/dashboard-ui';
+import { Feedback, FormActions, Modal, ModuleToolbar } from '@/components/module-ui';
+import { API, apiFetch, PageResponse } from '@/lib/api';
+import { Curso, Matricula } from '@/lib/types';
+
+export default function MatriculasEstudiantePage() {
+  const [enrollments, setEnrollments] = useState<Matricula[]>([]); const [courses, setCourses] = useState<Record<number, Curso>>({}); const [selected, setSelected] = useState<Matricula | null>(null);
+  const [search, setSearch] = useState(''); const [loading, setLoading] = useState(true); const [error, setError] = useState(''); const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null); const [submitting, setSubmitting] = useState(false); const [requestId, setRequestId] = useState(0);
+  const load = useCallback(() => { apiFetch<PageResponse<Matricula>>(API.matriculas, '/api/v1/matriculas/mias?size=200').then(async (page) => { const ids = [...new Set(page.contenido.map((item) => item.cursoId))]; const values = await Promise.all(ids.map((id) => apiFetch<Curso>(API.cursos, `/api/v1/cursos/${id}`))); setEnrollments(page.contenido); setCourses(Object.fromEntries(values.map((item) => [item.id, item]))); setError(''); }).catch((reason: Error) => setError(reason.message)).finally(() => setLoading(false)); }, []);
+  useEffect(() => { load(); }, [load, requestId]);
+  const filtered = useMemo(() => enrollments.filter((item) => `${item.periodoCodigo} ${item.seccionCodigo} ${item.estado} ${courses[item.cursoId]?.codigo} ${courses[item.cursoId]?.nombre}`.toLowerCase().includes(search.toLowerCase())), [courses, enrollments, search]);
+  async function withdraw(event: FormEvent<HTMLFormElement>) { event.preventDefault(); if (!selected) return; setSubmitting(true); const form = new FormData(event.currentTarget); try { await apiFetch(API.matriculas, `/api/v1/matriculas/${selected.id}/retiro`, { method: 'PATCH', body: JSON.stringify({ motivo: form.get('motivo') }) }); setSelected(null); setFeedback({ type: 'success', message: 'Retiro registrado. La vacante fue liberada.' }); setLoading(true); setRequestId((value) => value + 1); } catch (reason) { setFeedback({ type: 'error', message: reason instanceof Error ? reason.message : 'No se pudo registrar el retiro.' }); } finally { setSubmitting(false); } }
+  return <><PageHeading eyebrow="Estudiante" title="Mis matrículas" description="Consulta tus inscripciones oficiales y solicita el retiro de una matrícula activa." />
+    {feedback && <Feedback {...feedback} onClose={() => setFeedback(null)} />}{error && <DashboardError message={error} retry={() => { setLoading(true); setRequestId((value) => value + 1); }} />}
+    <section className="module-card"><ModuleToolbar search={search} onSearch={setSearch}><button className="secondary-button" onClick={() => { setLoading(true); setRequestId((value) => value + 1); }}><RefreshCw size={15} />Actualizar</button></ModuleToolbar><div className="module-body">{loading ? <DashboardSkeleton /> : filtered.length === 0 ? <EmptyState title="No tienes matrículas" description="Explora la oferta académica para inscribirte en una sección abierta." /> :
+      <div className="data-table-wrap"><table className="data-table"><thead><tr><th>Curso</th><th>Sección</th><th>Periodo</th><th>Créditos</th><th>Fecha</th><th>Estado</th><th /></tr></thead><tbody>{filtered.map((item) => <tr key={item.id}><td><strong>{courses[item.cursoId]?.codigo ?? item.cursoId} · {courses[item.cursoId]?.nombre ?? 'Curso'}</strong><small>Matrícula #{item.id}</small></td><td>{item.seccionCodigo}</td><td>{item.periodoCodigo}</td><td>{courses[item.cursoId]?.creditos ?? '—'}</td><td>{new Date(item.fechaMatricula).toLocaleDateString('es-PE')}</td><td><StatusBadge value={item.estado} /></td><td>{item.estado === 'ACTIVA' && <button className="secondary-button danger-text" onClick={() => setSelected(item)}><LogOut size={14} />Retirarme</button>}</td></tr>)}</tbody></table></div>}
+    </div></section>
+    <Modal open={!!selected} onClose={() => setSelected(null)} title="Retirar matrícula" description={`${courses[selected?.cursoId ?? 0]?.nombre ?? 'Curso'} · Sección ${selected?.seccionCodigo ?? ''}`}><form className="entity-form" onSubmit={withdraw}><div className="form-field full"><label>Motivo del retiro</label><textarea name="motivo" required maxLength={300} placeholder="Explica brevemente el motivo…" /></div><div className="info-strip">Esta acción libera la vacante y cambia el estado de la matrícula. No elimina el historial del registro.</div><FormActions submitting={submitting} onCancel={() => setSelected(null)} label="Confirmar retiro" /></form></Modal>
+  </>;
+}

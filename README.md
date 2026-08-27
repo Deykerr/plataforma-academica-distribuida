@@ -26,6 +26,7 @@ Funcionalidades disponibles:
 - pruebas de integración del flujo principal.
 - validación distribuida de prerrequisitos aprobados antes de matricular;
 - frontend React con autenticación JWT, rutas protegidas y paneles por rol.
+- módulos React para usuarios, catálogo, operación académica, evaluaciones, notas, matrículas y perfil.
 
 El Servicio de Cursos también valida las reglas de prerrequisitos, el aforo de aulas y la vigencia efectiva de los cursos. Reutiliza los JWT emitidos por Usuarios y conserva sus datos en una base PostgreSQL independiente.
 
@@ -185,3 +186,4 @@ npm run build
 - [Detalle del servicio de evaluaciones](backend/servicio-evaluaciones/README.md)
 - [Modelo entidad-relación de evaluaciones](base-de-datos/diagramas-er/evaluaciones.md)
 - [Guía del frontend React](frontend/app-web/README.md)
+- [Guía de pruebas integrales desde el frontend](documentacion/guia-pruebas-frontend.md)

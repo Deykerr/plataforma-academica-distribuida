@@ -5,15 +5,68 @@ export interface Estudiante {
   codigo: string;
   nombres: string;
   apellidos: string;
+  documentoIdentidad: string;
+  fechaNacimiento: string;
+  telefono: string | null;
+  direccion: string | null;
   carreraId: number;
+  estado: string;
+}
+
+export interface Docente {
+  id: number;
+  usuarioId: number;
+  correo: string;
+  codigo: string;
+  nombres: string;
+  apellidos: string;
+  documentoIdentidad: string;
+  especialidad: string;
+  telefono: string | null;
+  estado: string;
+}
+
+export interface Carrera {
+  id: number;
+  codigo: string;
+  nombre: string;
+  descripcion: string | null;
+  duracionCiclos: number;
+  estado: string;
+}
+
+export interface Ciclo {
+  id: number;
+  carreraId: number;
+  carreraCodigo: string;
+  numero: number;
+  nombre: string;
   estado: string;
 }
 
 export interface Curso {
   id: number;
+  carreraId: number;
+  carreraCodigo: string;
+  cicloId: number;
+  cicloNumero: number;
   codigo: string;
   nombre: string;
   creditos: number;
+  descripcion: string | null;
+  horasTeoria: number;
+  horasPractica: number;
+  prerequisitos: { id: number; codigo: string; nombre: string; creditos: number }[];
+  estado: string;
+}
+
+export interface Aula {
+  id: number;
+  codigo: string;
+  nombre: string;
+  tipo: string;
+  capacidad: number;
+  ubicacion: string;
   estado: string;
 }
 
@@ -88,4 +141,56 @@ export interface Historial {
   promedioSobreLoEvaluado: number;
   notaAprobatoria: number;
   estadoFinal: string;
+  ponderacionConfigurada: number;
+  ponderacionEvaluada: number;
+  calificaciones: {
+    evaluacionId: number;
+    codigo: string;
+    nombre: string;
+    tipo: string;
+    ponderacion: number;
+    notaMaxima: number;
+    nota: number | null;
+    aportePonderado: number;
+    observacion: string | null;
+  }[];
+}
+
+export interface Calificacion {
+  id: number;
+  evaluacionId: number;
+  evaluacionCodigo: string;
+  evaluacionNombre: string;
+  tipo: string;
+  estadoEvaluacion: string;
+  matriculaId: number;
+  estudianteId: number;
+  valor: number;
+  notaMaxima: number;
+  ponderacion: number;
+  observacion: string | null;
+}
+
+export interface ResumenPeriodo {
+  periodoId: number;
+  periodoCodigo: string;
+  totalSecciones: number;
+  matriculasActivas: number;
+  estudiantesUnicos: number;
+  capacidadTotal: number;
+  vacantesDisponibles: number;
+  porcentajeOcupacion: number;
+}
+
+export interface ResumenSeccion {
+  seccionId: number;
+  periodoId: number;
+  cursoId: number;
+  evaluacionesOficiales: number;
+  ponderacionConfigurada: number;
+  matriculasCalificadas: number;
+  resultadosCompletos: number;
+  aprobados: number;
+  desaprobados: number;
+  promedioGeneral: number;
 }

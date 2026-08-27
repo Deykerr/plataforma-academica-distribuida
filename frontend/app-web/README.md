@@ -36,6 +36,17 @@ La aplicación conserva el JWT en el almacenamiento local hasta su vencimiento, 
 
 Una cuenta que intente abrir el panel de otro rol es redirigida a su propia vista.
 
+### Módulos disponibles
+
+- Administrador: usuarios, catálogo de carreras/ciclos/cursos/aulas, operación de periodos/secciones/matrículas y reportes de ocupación y rendimiento.
+- Docente: secciones asignadas, evaluaciones ponderadas, estados, registro o corrección de notas y reportes por sección.
+- Estudiante: oferta académica, matrícula con validación de prerrequisitos, retiros, notas, perfil e historial académico imprimible.
+- Público: registro de una nueva cuenta de estudiante en `/registro`.
+
+Los registros principales incluyen edición controlada por las reglas del backend. Los reportes pueden descargarse en CSV o imprimirse/guardarse como PDF desde el navegador.
+
+La secuencia recomendada se encuentra en la [guía de pruebas integrales](../../documentacion/guia-pruebas-frontend.md).
+
 ## Configuración
 
 Los valores predeterminados apuntan al backend local. Para cambiarlos, copie `.env.example` como `.env.local` y modifique las URL. Los archivos `.env*` reales están excluidos de Git.

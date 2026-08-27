@@ -69,6 +69,15 @@ public class MatriculaControlador {
         return matriculaServicio.mias(periodoId, estado, pageable);
     }
 
+    @GetMapping("/seccion/{seccionId}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'DOCENTE')")
+    @Operation(summary = "Listar las matriculas activas de una seccion para registrar notas")
+    public PaginaRespuesta<MatriculaRespuesta> porSeccion(
+            @PathVariable Long seccionId,
+            @ParameterObject @PageableDefault(size = 100, sort = "estudianteId") Pageable pageable) {
+        return matriculaServicio.porSeccion(seccionId, pageable);
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Obtener una matricula si es propietario, docente de la seccion o administrador")
     public MatriculaRespuesta obtener(@PathVariable Long id) {

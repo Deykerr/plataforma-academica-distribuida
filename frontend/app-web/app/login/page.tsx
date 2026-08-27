@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { ArrowRight, BookOpenCheck, Boxes, Eye, EyeOff, LockKeyhole, Mail } from 'lucide-react';
 import { Brand } from '@/components/brand';
 import { LoadingScreen } from '@/components/loading-screen';
@@ -80,6 +81,7 @@ export default function LoginPage() {
             <span>Acceso local de prueba</span>
             <code>admin@academica.local</code>
           </div>
+          <p className="register-link">¿Eres estudiante y aún no tienes cuenta? <Link href="/registro">Crear cuenta</Link></p>
           <p className="login-help">¿Tienes problemas para ingresar? Contacta al administrador de tu institución.</p>
         </div>
       </section>
