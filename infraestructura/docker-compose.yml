@@ -104,6 +104,7 @@ services:
       DB_PASSWORD: ${MATRICULAS_DB_PASSWORD:-matriculas_password}
       USUARIOS_SERVICE_URL: http://servicio-usuarios:8081
       CURSOS_SERVICE_URL: http://servicio-cursos:8082
+      EVALUACIONES_SERVICE_URL: http://servicio-evaluaciones:8084
       JWT_SECRET: ${JWT_SECRET:-clave-local-docker-cambiar-minimo-32-caracteres-seguros}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
     ports:

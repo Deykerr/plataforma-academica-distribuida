@@ -13,6 +13,7 @@ Microservicio responsable de componentes de evaluación, calificaciones, promedi
 - notas publicadas visibles únicamente al estudiante titular;
 - promedio acumulado normalizado a escala vigesimal;
 - resultado `EN_PROCESO`, `APROBADO` o `DESAPROBADO`;
+- consulta distribuida de prerrequisitos aprobados para el Servicio de Matrículas;
 - reportes de resultados, aprobados, desaprobados y promedio por sección;
 - auditoría, control de concurrencia y errores JSON uniformes.
 
@@ -27,6 +28,7 @@ Microservicio responsable de componentes de evaluación, calificaciones, promedi
 | POST | `/api/v1/calificaciones/lote` | Administrador o docente responsable |
 | PUT | `/api/v1/calificaciones/{id}` | Mientras la evaluación no esté cerrada |
 | GET | `/api/v1/historial/matriculas/{id}` | Titular o administrador |
+| POST | `/api/v1/resultados/prerrequisitos/validacion` | Estudiante titular o administrador |
 | GET | `/api/v1/reportes/secciones/{id}/resultados` | Administrador o docente responsable |
 | GET | `/api/v1/reportes/secciones/{id}/resumen` | Administrador o docente responsable |
 

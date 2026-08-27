@@ -16,6 +16,7 @@ import servicio_matriculas.dominio.Seccion;
 import servicio_matriculas.dto.comun.PaginaRespuesta;
 import servicio_matriculas.dto.integracion.CursoValidacion;
 import servicio_matriculas.dto.integracion.UsuarioValidacion;
+import servicio_matriculas.dto.integracion.ValidacionPrerrequisitos;
 import servicio_matriculas.dto.matricula.CrearMatriculaSolicitud;
 import servicio_matriculas.dto.matricula.MatriculaRespuesta;
 import servicio_matriculas.dto.matricula.ValidacionMatriculaRespuesta;
@@ -53,6 +54,7 @@ public class MatriculaServicio {
         if (!curso.existe() || !curso.activo()) {
             throw new ReglaNegocioException("El curso de la seccion ya no esta activo");
         }
+        validarPrerrequisitos(solicitud.estudianteId(), curso);
 
         if (matriculaRepositorio.existsByEstudianteIdAndSeccionIdAndEstado(solicitud.estudianteId(),
                 seccion.getId(), EstadoMatricula.ACTIVA)) {
@@ -175,6 +177,19 @@ public class MatriculaServicio {
                             + actual.getSeccion().getCodigo());
                 }
             }
+        }
+    }
+
+    private void validarPrerrequisitos(Long estudianteId, CursoValidacion curso) {
+        if (curso.prerequisitoIds() == null || curso.prerequisitoIds().isEmpty()) {
+            return;
+        }
+        ValidacionPrerrequisitos validacion = integracion.validarPrerrequisitos(
+                estudianteId, curso.prerequisitoIds());
+        if (!validacion.cumple()) {
+            throw new ReglaNegocioException(
+                    "El estudiante no ha aprobado los cursos prerrequisito: "
+                            + validacion.cursosPendientes());
         }
     }
 

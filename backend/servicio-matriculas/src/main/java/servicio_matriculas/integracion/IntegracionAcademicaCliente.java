@@ -2,13 +2,16 @@ package servicio_matriculas.integracion;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
 import servicio_matriculas.dto.integracion.AulaValidacion;
 import servicio_matriculas.dto.integracion.CursoValidacion;
+import servicio_matriculas.dto.integracion.PrerrequisitosSolicitud;
 import servicio_matriculas.dto.integracion.UsuarioValidacion;
+import servicio_matriculas.dto.integracion.ValidacionPrerrequisitos;
 import servicio_matriculas.excepcion.DependenciaNoDisponibleException;
 import servicio_matriculas.seguridad.ContextoUsuario;
 
@@ -17,13 +20,16 @@ public class IntegracionAcademicaCliente {
 
     private final RestClient usuarios;
     private final RestClient cursos;
+    private final RestClient evaluaciones;
     private final ContextoUsuario contextoUsuario;
 
     public IntegracionAcademicaCliente(RestClient.Builder builder, ContextoUsuario contextoUsuario,
                                        @Value("${app.services.usuarios-url}") String usuariosUrl,
-                                       @Value("${app.services.cursos-url}") String cursosUrl) {
+                                       @Value("${app.services.cursos-url}") String cursosUrl,
+                                       @Value("${app.services.evaluaciones-url}") String evaluacionesUrl) {
         this.usuarios = builder.clone().baseUrl(usuariosUrl).build();
         this.cursos = builder.clone().baseUrl(cursosUrl).build();
+        this.evaluaciones = builder.clone().baseUrl(evaluacionesUrl).build();
         this.contextoUsuario = contextoUsuario;
     }
 
@@ -48,6 +54,16 @@ public class IntegracionAcademicaCliente {
                         .queryParam("aforoRequerido", aforo).build(aulaId))
                 .header(HttpHeaders.AUTHORIZATION, contextoUsuario.bearerToken())
                 .retrieve().body(AulaValidacion.class));
+    }
+
+    public ValidacionPrerrequisitos validarPrerrequisitos(Long estudianteId,
+                                                           java.util.Set<Long> cursoIds) {
+        return ejecutar("Servicio de Evaluaciones", () -> evaluaciones.post()
+                .uri("/api/v1/resultados/prerrequisitos/validacion")
+                .header(HttpHeaders.AUTHORIZATION, contextoUsuario.bearerToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new PrerrequisitosSolicitud(estudianteId, cursoIds))
+                .retrieve().body(ValidacionPrerrequisitos.class));
     }
 
     private <T> T ejecutar(String servicio, Peticion<T> peticion) {

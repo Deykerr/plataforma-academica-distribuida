@@ -94,6 +94,15 @@ class ServicioEvaluacionesApplicationTests {
         assertEquals(200, historial.statusCode());
         assertTrue(historial.body().contains("\"promedioAcumulado\":12.40"));
         assertTrue(historial.body().contains("\"estadoFinal\":\"APROBADO\""));
+        HttpResponse<String> prerrequisitos = enviar("POST",
+                "/api/v1/resultados/prerrequisitos/validacion",
+                "{\"estudianteId\":100,\"cursoIds\":[30,99]}", estudiante);
+        assertEquals(200, prerrequisitos.statusCode());
+        assertTrue(prerrequisitos.body().contains("\"cumple\":false"));
+        assertTrue(prerrequisitos.body().contains("30"));
+        assertTrue(prerrequisitos.body().contains("99"));
+        assertEquals(403, enviar("POST", "/api/v1/resultados/prerrequisitos/validacion",
+                "{\"estudianteId\":100,\"cursoIds\":[30]}", otroEstudiante).statusCode());
         assertEquals(403, enviar("GET", "/api/v1/historial/matriculas/1000", null, otroEstudiante).statusCode());
         assertEquals(403, enviar("GET", "/api/v1/historial/matriculas/1000", null, docente).statusCode());
 

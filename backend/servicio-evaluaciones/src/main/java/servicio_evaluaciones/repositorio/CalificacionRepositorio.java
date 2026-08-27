@@ -31,4 +31,12 @@ public interface CalificacionRepositorio extends JpaRepository<Calificacion, Lon
             "where c.evaluacion.seccionId = :seccionId and c.evaluacion.estado in :estados")
     List<Long> buscarMatriculasCalificadas(@Param("seccionId") Long seccionId,
                                             @Param("estados") Collection<?> estados);
+
+    @Query("select distinct c.matriculaId from Calificacion c " +
+            "where c.estudianteId = :estudianteId and c.evaluacion.cursoId = :cursoId " +
+            "and c.evaluacion.estado in :estados")
+    List<Long> buscarMatriculasPorEstudianteYCurso(
+            @Param("estudianteId") Long estudianteId,
+            @Param("cursoId") Long cursoId,
+            @Param("estados") Collection<?> estados);
 }

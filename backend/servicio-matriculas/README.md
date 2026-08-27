@@ -12,12 +12,13 @@ Microservicio transaccional responsable de los períodos, la oferta de secciones
 - apertura, cierre, inicio, finalización y cancelación controladas;
 - matrícula con bloqueo pesimista para evitar sobreventa de vacantes;
 - prevención de duplicados por sección y curso en el mismo período;
+- validación de que el estudiante aprobó todos los prerrequisitos del curso;
 - retiro, anulación y finalización de matrículas;
 - vistas personales de estudiantes y docentes;
 - reportes de ocupación, vacantes y estudiantes únicos;
 - endpoint de validación para el futuro Servicio de Evaluaciones.
 
-La verificación de prerrequisitos aprobados se integrará con Evaluaciones cuando dicho servicio exista. Cursos ya entrega los identificadores de prerrequisitos, pero Matrículas no inventa ni duplica calificaciones que todavía no pertenecen a ningún servicio.
+Antes de crear una matrícula, Cursos entrega los identificadores de prerrequisitos y Evaluaciones confirma cuáles fueron aprobados por el estudiante. Si queda alguno pendiente, la operación se rechaza con `400` y no se reserva una vacante.
 
 ## Endpoints principales
 
@@ -36,7 +37,7 @@ La verificación de prerrequisitos aprobados se integrará con Evaluaciones cuan
 Desde la raíz del repositorio, levante las bases y los dos servicios requeridos:
 
 ```powershell
-docker compose -f infraestructura\docker-compose.yml up -d postgres-usuarios postgres-cursos postgres-matriculas servicio-usuarios servicio-cursos
+docker compose -f infraestructura\docker-compose.yml up -d
 ```
 
 Después, en otra terminal:
@@ -74,6 +75,7 @@ Las fechas de matrícula deben incluir la fecha actual para poder abrir el perí
 | `DB_PASSWORD` | `matriculas_password` |
 | `USUARIOS_SERVICE_URL` | `http://localhost:8081` |
 | `CURSOS_SERVICE_URL` | `http://localhost:8082` |
+| `EVALUACIONES_SERVICE_URL` | `http://localhost:8084` |
 | `JWT_SECRET` | Debe coincidir con Usuarios y Cursos |
 
 ## Pruebas
@@ -82,4 +84,4 @@ Las fechas de matrícula deben incluir la fecha actual para poder abrir el perí
 .\mvnw.cmd test
 ```
 
-La prueba cubre seguridad, estados, conflictos de horario, cupos, duplicados, retiro, reportes, validación y OpenAPI.
+La prueba cubre seguridad, estados, prerrequisitos aprobados y pendientes, conflictos de horario, cupos, duplicados, retiro, reportes, validación y OpenAPI.

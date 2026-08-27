@@ -24,10 +24,12 @@ Funcionalidades disponibles:
 - migraciones PostgreSQL con Flyway;
 - documentación interactiva OpenAPI/Swagger;
 - pruebas de integración del flujo principal.
+- validación distribuida de prerrequisitos aprobados antes de matricular;
+- frontend React con autenticación JWT, rutas protegidas y paneles por rol.
 
 El Servicio de Cursos también valida las reglas de prerrequisitos, el aforo de aulas y la vigencia efectiva de los cursos. Reutiliza los JWT emitidos por Usuarios y conserva sus datos en una base PostgreSQL independiente.
 
-El Servicio de Matrículas integra las APIs de Usuarios y Cursos, controla cupos concurrentes y choques de horario, y expone validaciones para Evaluaciones. Evaluaciones valida las matrículas por REST, controla ponderaciones, restringe el historial y calcula automáticamente el resultado final.
+El Servicio de Matrículas integra las APIs de Usuarios, Cursos y Evaluaciones, controla cupos concurrentes, choques de horario y prerrequisitos aprobados. Evaluaciones valida las matrículas por REST, controla ponderaciones, restringe el historial y calcula automáticamente el resultado final.
 
 ## Estructura
 
@@ -44,7 +46,7 @@ documentacion/
 infraestructura/
   docker-compose.yml
 frontend/
-  app-web/                 # Pendiente
+  app-web/                 # React: autenticación y paneles por rol
 ```
 
 Cada microservicio tiene su propia base. `servicio-usuarios` únicamente conserva `carreraId` como identificador externo y no accede a `cursos_db`; la comunicación entre servicios se realiza mediante API y JWT.
@@ -76,6 +78,16 @@ Para detener los contenedores sin borrar los datos:
 ```powershell
 docker compose down
 ```
+
+En otra terminal, inicie el frontend:
+
+```powershell
+cd frontend\app-web
+npm install
+npm run dev
+```
+
+Abra `http://localhost:5173`. La cuenta local inicial es `admin@academica.local` con contraseña `Admin123*`.
 
 ## Ejecución para desarrollo
 
@@ -152,6 +164,14 @@ cd ..\servicio-evaluaciones
 
 Cada prueba levanta el servicio correspondiente con una base H2 aislada. Los flujos verifican autenticación, permisos, duplicados, catálogo, prerrequisitos, aforo y generación de OpenAPI.
 
+El frontend se verifica con:
+
+```powershell
+cd frontend\app-web
+npm run lint
+npm run build
+```
+
 ## Documentación
 
 - [Requisitos funcionales](documentacion/requisitos-funcionales.md)
@@ -164,3 +184,4 @@ Cada prueba levanta el servicio correspondiente con una base H2 aislada. Los flu
 - [Modelo entidad-relación de matrículas](base-de-datos/diagramas-er/matriculas.md)
 - [Detalle del servicio de evaluaciones](backend/servicio-evaluaciones/README.md)
 - [Modelo entidad-relación de evaluaciones](base-de-datos/diagramas-er/evaluaciones.md)
+- [Guía del frontend React](frontend/app-web/README.md)

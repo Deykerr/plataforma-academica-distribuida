@@ -13,6 +13,8 @@ import servicio_evaluaciones.dto.historial.HistorialAcademicoRespuesta;
 import servicio_evaluaciones.dto.integracion.MatriculaValidacion;
 import servicio_evaluaciones.dto.integracion.SeccionValidacion;
 import servicio_evaluaciones.dto.reporte.ResumenSeccionRespuesta;
+import servicio_evaluaciones.dto.resultado.ValidacionPrerrequisitosRespuesta;
+import servicio_evaluaciones.dto.resultado.ValidarPrerrequisitosSolicitud;
 import servicio_evaluaciones.excepcion.RecursoNoEncontradoException;
 import servicio_evaluaciones.integracion.IntegracionMatriculasCliente;
 import servicio_evaluaciones.repositorio.CalificacionRepositorio;
@@ -22,6 +24,7 @@ import servicio_evaluaciones.seguridad.ContextoUsuario;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -95,6 +98,30 @@ public class HistorialServicio {
         return new ResumenSeccionRespuesta(seccionId, seccion.periodoId(), seccion.cursoId(),
                 evaluaciones.size(), sumaPonderacion(evaluaciones), resultados.size(), completos.size(),
                 aprobados, completos.size() - aprobados, promedio);
+    }
+
+    @Transactional(readOnly = true)
+    public ValidacionPrerrequisitosRespuesta validarPrerrequisitos(
+            ValidarPrerrequisitosSolicitud solicitud) {
+        boolean administrador = contextoUsuario.tieneRol("ADMINISTRADOR");
+        boolean propietario = contextoUsuario.tieneRol("ESTUDIANTE")
+                && contextoUsuario.usuarioId().equals(solicitud.estudianteId());
+        if (!administrador && !propietario) {
+            throw new AccessDeniedException(
+                    "Solo el estudiante titular o la administracion pueden validar prerrequisitos");
+        }
+
+        Set<Long> aprobados = new LinkedHashSet<>();
+        Set<Long> pendientes = new LinkedHashSet<>();
+        for (Long cursoId : solicitud.cursoIds()) {
+            boolean aprobado = calificacionRepositorio.buscarMatriculasPorEstudianteYCurso(
+                            solicitud.estudianteId(), cursoId, ESTADOS_OFICIALES)
+                    .stream().map(this::obtenerMatricula).map(this::construir)
+                    .anyMatch(resultado -> resultado.estadoFinal() == EstadoResultado.APROBADO);
+            if (aprobado) aprobados.add(cursoId); else pendientes.add(cursoId);
+        }
+        return new ValidacionPrerrequisitosRespuesta(solicitud.estudianteId(), pendientes.isEmpty(),
+                Set.copyOf(aprobados), Set.copyOf(pendientes));
     }
 
     private HistorialAcademicoRespuesta construir(MatriculaValidacion matricula) {

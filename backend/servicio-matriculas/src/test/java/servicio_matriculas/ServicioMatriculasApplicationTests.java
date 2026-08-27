@@ -14,6 +14,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import servicio_matriculas.dto.integracion.AulaValidacion;
 import servicio_matriculas.dto.integracion.CursoValidacion;
 import servicio_matriculas.dto.integracion.UsuarioValidacion;
+import servicio_matriculas.dto.integracion.ValidacionPrerrequisitos;
 import servicio_matriculas.integracion.IntegracionAcademicaCliente;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -34,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -59,6 +61,8 @@ class ServicioMatriculasApplicationTests {
         String tokenAdmin = generarToken(1L, "admin@academica.test", List.of("ADMINISTRADOR"));
         String tokenEstudiante = generarToken(100L, "estudiante@academica.test", List.of("ESTUDIANTE"));
         String tokenOtro = generarToken(101L, "otro@academica.test", List.of("ESTUDIANTE"));
+        String tokenSinPrerrequisito = generarToken(102L, "sin-prerrequisito@academica.test",
+                List.of("ESTUDIANTE"));
         LocalDate hoy = LocalDate.now();
 
         HttpResponse<String> periodo = enviar("POST", "/api/v1/periodos", """
@@ -124,6 +128,12 @@ class ServicioMatriculasApplicationTests {
         assertEquals(200, enviar("PATCH", "/api/v1/secciones/" + seccionId + "/estado",
                 "{\"estado\":\"ABIERTA\"}", tokenAdmin).statusCode());
 
+        HttpResponse<String> sinPrerrequisito = enviar("POST", "/api/v1/matriculas",
+                "{\"estudianteId\":102,\"seccionId\":" + seccionId + "}",
+                tokenSinPrerrequisito);
+        assertEquals(400, sinPrerrequisito.statusCode());
+        assertTrue(sinPrerrequisito.body().contains("50"));
+
         HttpResponse<String> matricula = enviar("POST", "/api/v1/matriculas",
                 "{\"estudianteId\":100,\"seccionId\":" + seccionId + "}", tokenEstudiante);
         assertEquals(201, matricula.statusCode());
@@ -186,7 +196,14 @@ class ServicioMatriculasApplicationTests {
         });
         when(integracion.validarCurso(anyLong())).thenAnswer(invocacion -> {
             Long id = invocacion.getArgument(0);
-            return new CursoValidacion(id, true, true, 1L, 1L, 4, Set.of());
+            return new CursoValidacion(id, true, true, 1L, 1L, 4, Set.of(50L));
+        });
+        when(integracion.validarPrerrequisitos(anyLong(), anySet())).thenAnswer(invocacion -> {
+            Long estudianteId = invocacion.getArgument(0);
+            if (estudianteId.equals(102L)) {
+                return new ValidacionPrerrequisitos(estudianteId, false, Set.of(), Set.of(50L));
+            }
+            return new ValidacionPrerrequisitos(estudianteId, true, Set.of(50L), Set.of());
         });
         when(integracion.validarAula(anyLong(), anyInt())).thenAnswer(invocacion -> {
             Long id = invocacion.getArgument(0);
