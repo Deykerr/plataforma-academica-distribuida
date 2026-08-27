@@ -23,6 +23,11 @@ mvnw.cmd
 !backend/servicio-matriculas/.mvn/wrapper/maven-wrapper.properties
 !backend/servicio-matriculas/mvnw
 !backend/servicio-matriculas/mvnw.cmd
+!backend/servicio-evaluaciones/.mvn/
+!backend/servicio-evaluaciones/.mvn/wrapper/
+!backend/servicio-evaluaciones/.mvn/wrapper/maven-wrapper.properties
+!backend/servicio-evaluaciones/mvnw
+!backend/servicio-evaluaciones/mvnw.cmd
 
 # --- IDEs (Visual Studio Code, NetBeans, IntelliJ) ---
 .vscode/

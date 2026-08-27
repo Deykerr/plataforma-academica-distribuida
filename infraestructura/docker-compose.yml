@@ -118,10 +118,52 @@ services:
     networks:
       - academica-network
 
+  postgres-evaluaciones:
+    image: postgres:17-alpine
+    container_name: academica-postgres-evaluaciones
+    environment:
+      POSTGRES_DB: evaluaciones_db
+      POSTGRES_USER: evaluaciones_app
+      POSTGRES_PASSWORD: ${EVALUACIONES_DB_PASSWORD:-evaluaciones_password}
+    ports:
+      - "5436:5432"
+    volumes:
+      - evaluaciones_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U evaluaciones_app -d evaluaciones_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - academica-network
+
+  servicio-evaluaciones:
+    build:
+      context: ../backend/servicio-evaluaciones
+    container_name: academica-servicio-evaluaciones
+    environment:
+      DB_URL: jdbc:postgresql://postgres-evaluaciones:5432/evaluaciones_db
+      DB_USERNAME: evaluaciones_app
+      DB_PASSWORD: ${EVALUACIONES_DB_PASSWORD:-evaluaciones_password}
+      MATRICULAS_SERVICE_URL: http://servicio-matriculas:8083
+      JWT_SECRET: ${JWT_SECRET:-clave-local-docker-cambiar-minimo-32-caracteres-seguros}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
+      NOTA_APROBATORIA: ${NOTA_APROBATORIA:-11.00}
+    ports:
+      - "8084:8084"
+    depends_on:
+      postgres-evaluaciones:
+        condition: service_healthy
+      servicio-matriculas:
+        condition: service_started
+    networks:
+      - academica-network
+
 volumes:
   usuarios_postgres_data:
   cursos_postgres_data:
   matriculas_postgres_data:
+  evaluaciones_postgres_data:
 
 networks:
   academica-network:

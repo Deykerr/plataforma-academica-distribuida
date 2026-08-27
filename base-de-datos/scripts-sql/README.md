@@ -12,4 +12,8 @@ El esquema ejecutable del servicio de matriculas está en:
 
 `backend/servicio-matriculas/src/main/resources/db/migration/V1__crear_esquema_matriculas.sql`
 
-Flyway aplica la migración automáticamente y evita ejecutar scripts manuales fuera de orden. Los próximos microservicios mantendrán sus migraciones dentro de su propio proyecto para conservar el aislamiento de datos.
+El esquema ejecutable del servicio de evaluaciones está en:
+
+`backend/servicio-evaluaciones/src/main/resources/db/migration/V1__crear_esquema_evaluaciones.sql`
+
+Flyway aplica las migraciones automáticamente y evita ejecutar scripts manuales fuera de orden. Cada microservicio mantiene sus migraciones dentro de su propio proyecto para conservar el aislamiento de datos.
